@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block head %}
+    {{ super() }}
+    <!-- custom CSS -->
+    <link rel="stylesheet" href="../static/css/style.css" />
+{% endblock %}
+
+{% block content %}
+    <h1 id="top">{% block title %} About {% endblock %}</h1>
+{% endblock %}

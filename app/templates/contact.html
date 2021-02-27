@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Contact {% endblock %}</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.name.label }}<br />
+            {{ form.name(size=20, class_='form-control') }}
+            {% for error in form.name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.email.label }}<br />
+            {{ form.email(class_='form-control') }}
+            {% for error in form.email.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.subject.label }}<br />
+            {{ form.subject(class_='form-control') }}
+            {% for error in form.subject.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.body.label }}<br />
+            {{ form.body(class_='form-control', rows=5) }}
+            {% for error in form.body.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.recaptcha }}
+        </p>
+        {{ form.submit(class_='btn btn-primary') }}
+    </form>
+{% endblock %}

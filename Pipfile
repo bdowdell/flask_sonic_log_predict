@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "*"
+Flask = "*"
+Flask-WTF = "*"
+email-validator = "*"
+Flask-Mail = "*"
+coverage = "*"
+python-dotenv = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"

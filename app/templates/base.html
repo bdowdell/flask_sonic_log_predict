@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+Copyright YYYY, FirstName MI LastName
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<head>
+    {% block head %}
+    <!-- Required meta tags -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="icon" href="../static/img/wedge.png" type="image/png" width="64" height="64" />
+
+    <!-- Optional JavaScript -->
+    <!-- JQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+    <title>{% block title %} {% endblock %}</title>
+    {% endblock %}
+</head>
+<body>
+    <nav class="navbar fixed-top navbar-expand-md navbar-light bg-light">
+        <a class="navbar-brand" href="{{ url_for('main.index')}}">
+            <img src="../static/img/wedge.png" width="30" height="30" class="d-inline-block align-top" alt="" loading="lazy">
+            Site Name
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav">
+                <a class="nav-link active" href="{{ url_for('main.about')}}">About</a>
+                <a class="nav-link active" title="GitHub" href="https://github.com/bdowdell/flask_template" target="_blank">
+                    <img src="../static/img/icons8-github-30.png" width="25" height="25" alt="" loading="lazy"/>
+                </a>
+                <a class="nav-link active" title="Twitter" href="https://twitter.com/" target="_blank">
+                    <img src="https://img.icons8.com/ios-glyphs/48/000000/twitter.png" width="25" height="25" loading="lazy"/>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <nav class="navbar fixed-bottom navbar-expand-sm navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footer" aria-controls="footer" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="footer">
+            <div class="navbar-nav">
+                <a class="nav-link" href="https://github.com/bdowdell/flask_template/blob/master/LICENSE" target="_blank">
+                    Copyright YYYY, Name</a>
+                <a class="nav-link" href="{{ url_for('main.contact')}}">Contact</a>
+                <a class="nav-link" href="https://icons8.com/icons" target="_blank">icons by Icons8</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container" style="padding-top:60px; padding-bottom:100px">
+        {% block content %} {% endblock %}
+    </div>
+
+</body>
+</html>
