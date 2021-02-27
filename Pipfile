@@ -11,6 +11,7 @@ email-validator = "*"
 Flask-Mail = "*"
 coverage = "*"
 python-dotenv = "*"
+joblib = "*"
 
 [dev-packages]
 
