@@ -121,4 +121,21 @@
         mean_squared_error(y_real, df_final[['pred_DTC', 'pred_DTS']], squared=False)
     </code></pre>
     <code style="color: black; font-family:monospace;">16.510940896741243</code>
+    <p class="text-justify">
+        For completeness, here are plots comparing the real and predicted values of both DTC (left) and DTS (right). It is 
+        obvious that overall, DTC is predicted relatively reliably. In fact, the RMSE for DTC on it's own is 4.77. However, 
+        DTS is much more challenging to predict using this model and as the real values become slower (increasing to the right), 
+        the model severely underpredicts DTS. On it's own, the DTS RMSE is 22.86.
+    </p>
+    <figure class="figure">
+        <img src="../static/img/residual_plot.png" class="figure-img img-fluid rounded mx-auto d-block" alt="y vs y_hat" loading="lazy">
+        <figcaption class="figure-caption text-center">Plot of y_real versus y_hat for DTC (left) and DTS (right).</figcaption>
+    </figure>
+    <hr />
+    <p class="text-justify">
+        <small>
+            <strong>Disclaimer:</strong> use of SonicPredict's API is meant strictly for educational purposes and should not be used to 
+            make investment decisions. Use the predictions at your own peril.
+        </small>
+    </p>
 {% endblock %}
