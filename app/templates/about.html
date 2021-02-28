@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% block head %}
     {{ super() }}
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
     <!-- custom CSS -->
     <link rel="stylesheet" href="../static/css/style.css" />
 {% endblock %}
@@ -10,12 +14,54 @@
     <h4>Background</h4>
     <p class="text-justify">
         Welcome to SonicPredict, which is a small Flask web app I built to serve my fitted machine learning
-        model from the 2020 SPWLA PDDA Machine Learning Contest. The competition took place between March-May 2020 
+        model from the 
+        <a href="https://github.com/pddasig/Machine-Learning-Competition-2020" target="_blank">2020 SPWLA PDDA Machine Learning Contest</a>. 
+        The competition took place between March-May 2020 
         with a total of 31 teams participating. The goal of the competition was to predict P- and S-sonic well 
         logs using other commonly acquired well logs. This is a problem that arises commonly in the oil & gas 
         industry, either as a result of budget constraints, poor borehole conditions, or sometimes the data 
-        is simply missing.
+        is simply missing, either because of time passed, mismanagement and/or lack of records, etc ...
     </p>
+    <h4>Motivation</h4>
+    <p class="text-justify">
+        P- and S-sonic curves are acoustic measurements of the travel time, or slowness, of sound through the subsurface. 
+        Sonic slowness is the reciprocal of velocity, so faster (~denser and/or stiffer) rocks have smaller slowness values. In other words, it takes 
+        less time for the sound wave to travel through the rock. Sonic curves are very important borehole measurements to make 
+        because when they are combined with density measurements, geoscientists are able to approximate each subsurface layers' 
+        <strong>elastic properties</strong> such as Acoustic and Shear Impedance, Bulk modulus, Young's modulus, Shear modulus, and Poisson's ratio. 
+        These properties are crucial in calibrating the seismic response of the subsurface and allow us to better estimate subsurface 
+        rock properties away from a well bore.
+    </p>
+    <p class="text-justify">
+        Before a geoscientist can seismically calibrate the elastic properties mentioned above, wells first need to be <strong>tied</strong>. 
+        Seismic is natively acquired in the time domain and its natural vertical axis is two-way travel time. By measuring 
+        travel-time in the wellbore with a sonic curve, the well data, which is naturally measured in depth, can be tied to 
+        the seismic two-way time axis. Once this crucial well tie is established, the actual elastic property calibration can begin.
+    </p>
+    <p class="text-justify">
+        Once the <strong>time-to-depth</strong> relationship is established at the wellbore, a velocity model can be built to 
+        convert the seismic to the depth domain. As more wells are drilled in an area, this velocity model is improved. There 
+        are several reasons for converting seismic from the time- to the depth-domain. First, the depth domain more closely 
+        represents the true structure of the subsurface. This is important for understanding things like stratigraphic dip, 
+        closures, traps, and amplitude conformance to structure. Second, it makes assessing gross rock volume of a reservoir 
+        substantially easier as the units in depth actually relate to a physical volume. Third, it just makes more sense to think 
+        about the subsurface in terms of depth rather than travel time. 
+    </p>
+    <p class="text-justify">
+        Sonic curves are also very crucial in estimating <strong>pore pressure</strong> given their sensitivity to pore fluids. Having accurate 
+        and calibrated models of subsurface pore pressure are critical for safe and efficient drilling. Sonic curves can approximate 
+        pore pressure via several well known transforms, such as Eaton or Bowers, and this in turn can be used to calibrate a 
+        seismic velocity field to a seismic pore pressure model. Not only is such a tool useful for estimating pre-drill pore 
+        pressure at new drilling locations, but it can also be very useful in understanding subsurface fluid flow from source rock 
+        to reservoir.
+    </p>
+    <p class="text-justify">
+        It should hopefully now be clear why sonic curves are so important. However, as described earlier, they are not always 
+        available, and even if they are, the measurements are not always reliable if borehole conditions are poor. <em>For these 
+        reasons, if we are able to build novel machine learning models that predict P- and S-sonic curves with reasonable 
+        accuracy, we would be able to remediate the issues we face when these curves are either missing or of bad quality.</em>
+    </p>
+    <h4>2020 SPWLA PDDA Machine Learning Competition</h4>
     <p class="text-jusity">
         Each team was given the same training data set from which to build novel machine learning solutions. 
         Additionally, we were given a 20% sample of the blind test data with which to test our model accuracy. 
@@ -39,8 +85,55 @@
             <li>S-Sonic (DTS)</li>
         </ul>
         and the targets were both P- and S-sonic logs. My final model used GR, HRD, CNC, & ZDEN, and consisted of 
-        and average ensemble of a Random Forest Regression, Gradient Boosting Regressor, XGBoost, Principal Component Regression, 
+        an average ensemble of a Random Forest Regression, Gradient Boosting Regressor, XGBoost, Principal Component Regression, 
         & KNN Regression. This model achieved an RMSE of 16.31 and finished 9<sup>th</sup> of the 20 teams which were ranked. 
         The top team achieved an RMSE of 12.36.
     </p>
+    <h4>Workflow Summary</h4>
+    <p class="text-justify">
+        For more details, you can refer to my final submission Jupyter 
+        <a href="https://github1s.com/bdowdell/Machine-Learning-Competition-2020/blob/master/nb/datadrivenpancakes_solution_submission_3.ipynb" target="_blank">notebook</a> 
+        as well as my GitHub repository for the competition linked above in the navbar. The actual notebook is too large to render directly 
+        in the repository, so instead I have linked to github1s which opens the notebook in VSCode. Clicking 'show in preview' on 
+        the right hand side will render the notebook.
+    </p>
+    <p class="text-justify">
+        <h5>1) Data Loading and Initial Inspection</h5>
+        <ul>
+            <li>Inspect summary statistics for data min/max</li>
+            <li>Manually clip min/max based on physical limits</li>
+            <li>Inspect histograms for each curve to understand distribution shapes</li>
+        </ul>
+        <h5>2) Application of Inter-Quartile Ranger (IQR) Filter</h5>
+        <ul>
+            <li>Log-transform each curve to approximate normal distribution</li>
+            <li>Filter statistical outliers using IQR range</li>
+            <li>Exponentiate each filtered curve to return to original limits</li>
+        </ul>
+        <h5>3) Final Feature Selection</h5>
+        <ul>
+            <li>CAL dropped due to poor data</li>
+            <li>HRM dropped as it contains nearly duplicate information as HRD</li>
+            <li>PE dropped as a non-significant feature</li>
+        </ul>
+        <h5>4) Pre-processing Pipeline</h5>
+        <ul>
+            <li>log transform each curve</li>
+            <li>Apply Scikit-Learn StandardScaler to scale all data</li>
+            <li>Principal Components Analysis, keeping first three PC's (96.4% of variation described)</li>
+        </ul>
+        <h5>5) Model Fitting and Hyperparameter Tuning via 5-fold Grid Search Cross-Validation</h5>
+        <ul>
+            <li>Random Forest Regressor</li>
+            <li>Gradient Boosting Regressor</li>
+            <li>XGBoost</li>
+            <li>Principal Component Regression using SVR</li>
+            <li>KNN Regression</li>
+        </ul>
+        <h5>6) Average Ensemble of models selected as final model</h5>
+        $$\hat{y}_{ensemble} = \frac{\hat{y}_{RFR} + \hat{y}_{GBR} + \hat{y}_{XGB} + \hat{y}_{PCR} + \hat{y}_{KNN}}{5}$$
+        <h5>7) Make Predictions for Blind Test Data</h5>
+    </p>
+    <h4>Learnings</h4>
+    
 {% endblock %}
