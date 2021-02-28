@@ -77,3 +77,9 @@ class APITestCase(unittest.TestCase):
         response = self.client.post('api/get_predictions', data=j_df, headers=self.headers)
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.data.decode('utf-8'), 'Key Error, please check data frame column names')
+
+    def test_bad_url_404(self):
+        j_df = json.dumps(self.df_in.to_json(orient='split'))
+        response = self.client.post('bad/url', data=j_df, headers=self.headers)
+        self.assertEqual(response.status_code, 404)
+        
