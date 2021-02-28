@@ -7,10 +7,11 @@
     </script>
     <!-- custom CSS -->
     <link rel="stylesheet" href="../static/css/style.css" />
+    {% block title %}About{% endblock %}
 {% endblock %}
 
 {% block content %}
-    <h1 class="text-center" id="top">{% block title %} About {% endblock %}</h1>
+    <h1 class="text-center" id="top">What I did, Why I did it, and What I learned</h1>
     <h4>Background</h4>
     <p class="text-justify">
         Welcome to SonicPredict, which is a small Flask web app I built to serve my fitted machine learning
@@ -25,7 +26,7 @@
     <h4>Motivation</h4>
     <p class="text-justify">
         P- and S-sonic curves are acoustic measurements of the travel time, or slowness, of sound through the subsurface. 
-        Sonic slowness is the reciprocal of velocity, so faster (~denser and/or stiffer) rocks have smaller slowness values. In other words, it takes 
+        Sonic slowness is the reciprocal of velocity, so faster (<em>~denser and/or stiffer</em>) rocks have smaller slowness values. In other words, it takes 
         less time for the sound wave to travel through the rock. Sonic curves are very important borehole measurements to make 
         because when they are combined with density measurements, geoscientists are able to approximate each subsurface layers' 
         <strong>elastic properties</strong> such as Acoustic and Shear Impedance, Bulk modulus, Young's modulus, Shear modulus, and Poisson's ratio. 
@@ -34,13 +35,15 @@
     </p>
     <p class="text-justify">
         Before a geoscientist can seismically calibrate the elastic properties mentioned above, wells first need to be <strong>tied</strong>. 
-        Seismic is natively acquired in the time domain and its natural vertical axis is two-way travel time. By measuring 
+        Seismic is natively acquired in the time domain and its natural vertical axis is two-way travel time (<em>two-way because of the time it takes a 
+            sound wave to travel down into the subsurface and return after bouncing off a reflector</em>). By measuring 
         travel-time in the wellbore with a sonic curve, the well data, which is naturally measured in depth, can be tied to 
         the seismic two-way time axis. Once this crucial well tie is established, the actual elastic property calibration can begin.
     </p>
     <p class="text-justify">
         Once the <strong>time-to-depth</strong> relationship is established at the wellbore, a velocity model can be built to 
-        convert the seismic to the depth domain. As more wells are drilled in an area, this velocity model is improved. There 
+        convert the seismic to the depth domain, or to calibrate one built using technologies such as tomography. As more wells 
+        are drilled in an area, this velocity model is improved. There 
         are several reasons for converting seismic from the time- to the depth-domain. First, the depth domain more closely 
         represents the true structure of the subsurface. This is important for understanding things like stratigraphic dip, 
         closures, traps, and amplitude conformance to structure. Second, it makes assessing gross rock volume of a reservoir 
@@ -50,7 +53,7 @@
     <p class="text-justify">
         Sonic curves are also very crucial in estimating <strong>pore pressure</strong> given their sensitivity to pore fluids. Having accurate 
         and calibrated models of subsurface pore pressure are critical for safe and efficient drilling. Sonic curves can approximate 
-        pore pressure via several well known transforms, such as Eaton or Bowers, and this in turn can be used to calibrate a 
+        pore pressure via several well known transforms, and this in turn can be used to calibrate a 
         seismic velocity field to a seismic pore pressure model. Not only is such a tool useful for estimating pre-drill pore 
         pressure at new drilling locations, but it can also be very useful in understanding subsurface fluid flow from source rock 
         to reservoir.
@@ -135,5 +138,95 @@
         <h5>7) Make Predictions for Blind Test Data</h5>
     </p>
     <h4>Learnings</h4>
-    
+    <ol>
+        <li>
+            <h5>Simplicity</h5>
+            <p class="text-justify">
+                One of my guiding principals has always been to prefer simplicity over complexity and to only add complexity 
+                as needed to effectively solve the problem at hand. I didn't adhere very strictly to this personal mantra during 
+                this project and jumped eagerly into using complex models and hyperparameter tuning. In hindsight, I'm still 
+                not convinvced that simpler linear models would have performed better, but I wish I had spent a little more time 
+                investigating linear models and looking for possible interaction terms amongst the predictors. There are many 
+                well-known linear models currently employed by geoscientists derived from empirical measurements (such as the famous Castagna mud-rock line), and 
+                I think that if a linear model could work and also be significantly more interpretable than a Random Forest, 
+                this type of work might gain traction faster in the oil and gas industry. However, given the limited time to work 
+                on this project, I quickly bypassed linear models in favor of tree-based methods, which did appear to work reasonably 
+                well.
+            </p>
+        </li>
+        <li>
+            <h5>Feature Engineering</h5>
+            <p class="text-justify">
+                I did not spend much time on feature engineering. I did apply several transforms to my feature set, such as log-transforming, standard scaling,  
+                and Principal Component Analysis, but that only serves to represent the features in a manner with hopefully less variation 
+                and a closer approximation to normality. Comparing my results to the top five, a number of the teams employed 
+                some form of clustering for common lithotypes, and when this feature was added to their models, it appears to have 
+                had a positive effect.
+            </p>
+            <p class="text-justify">
+                We were not told the true depth or units of the data, although I wish I had tested some assumptions based on the 
+                number of samples and known typical log step increments. It is well-established that rock properties change with 
+                increasing depth as a result of burial and compaction and I think if I could have introduced some features which 
+                gave information about depth and compaction trend it would have provided a positive benefit to the model.
+            </p>
+            <p class="text-justify">
+                One thing that is apparent from creating a lightened version of my model for the API is that there was very 
+                little additional uplift provided in including the Random Forest and Gradient Boosting Regressor models to 
+                the average ensemble of XGBoost, PCR, and KNN Regression. I think this underscores that feature engineering 
+                would have provided more benefit rather than spending more time on tuning hyperparameters.
+            </p>
+            <p class="text-justify">
+                I did attempt to use the Photoelectric Factor (PE) and Density (ZDEN) curves to create RHOMAA-UMAA logs. Cross-plotting 
+                RHOMAA-UMAA is a very effective way to separate lithologies. While I had some success, I did not exactly have all the 
+                data necessary to do this correctly and ultimately abandoned it when I did not feel that the transformed data was 
+                correctly cross-plotting on established rock physics templates. I think using an unsupervised clustering technique 
+                such as discussed above would have possibly been more beneficial given imperfect and incomplete data.
+            </p>
+        </li>
+        <li>
+            <h5>Model Selection</h5>
+            <p class="text-justify">
+                I chose to work primarily with tree-based methods, such as Random Forest, Gradient Boosting, and XGBoost. 
+                Of the top five entries, three used tree-based models, and two used neural networks. I think this reinforces 
+                my previous learnings that feature engineering was more important in improving model accuracy than the actual 
+                model itself. I think it also underscores how strongly tree-based methods perform and in scenarios where 
+                predictability is more important than model interpretability, they can be very reliable choices.
+            </p>
+            <p class="text-justify">
+                Several of the top five entries also chose to build separate models for predicting DTC and DTS, sometimes 
+                using predicted DTC as an input for DTS. The models I built performed multi-target regression for both targets. 
+                I think attempting to first predict DTC and then DTS may have resulted in model improvement. DTS typically tracks 
+                DTC very closely so it makes sense to first find a robust solution for DTC and use it then as a predictor for DTS.
+            </p>
+            <p class="text-justify">
+                Several of the models I used (Gradient Boosting Decision Trees, XGBoost, Ridge Regression, & Support Vector Regression) do 
+                not natively support Multi-Target Regression, meaning they cannot directly regress for two different response targets. 
+                To get around this, I used Scikit-Learn's MultiOutputRegressor to wrap the model as a part of the pre-processing pipeline. 
+                One assumption made by MultiOutputRegressor is that the two targets are independent of one another. As I just mentioned, 
+                we know that DTC and DTS are related, so perhaps this is evidence to support that I should have built separate models for each.
+            </p>
+        </li>
+    </ol>
+    <h4>Conclusions</h4>
+    <p class="text-justify">
+        All-in-all, I really enjoyed participating in this contest. The timing coincided with the first two months of COVID-19 
+        quarantine lock-down and so it gave me something fun to work on in the evenings as we adjusted to working from home and 
+        having very limited external contact. This was the first machine learning contest I've competed in and I'm happy to have 
+        finished in the top ten. I think I came away with some great takeaways that will be useful to future projects.
+    </p>
+    <p class="text-justify">
+        Even though my model is not the top performer, I think I have a nice portfolio project as a result of participating. Recently, 
+        I built my first Flask web app (<a href="https://pyseistuned.com" target="_blank">PySeisTuned<sup>2.0</sup></a>), and this 
+        project allowed me to learn how to build a Flask API for serving a machine learning model. Building predictive models is 
+        a lot of fun, but if nobody can use them once they are built, then you aren't very useful as a data scientist.
+    </p>
+    <p class="text-justify">
+        I think one of the reasons data science appeals to me so much is that it combines a number of my intellectual interests: 
+        coding, mathematics, statistics, physical and social science, and software development. Coding and programming has been an 
+        interest, hobby, and passion of mine since I was in middle school. It's a constant learning journey and it requires patience 
+        and persistance. Moments of joy usually result from hours of frustration. If there is anyone out there that has questions, 
+        I am more than happy to be a resource! I don't have all the answers, not by a long shot, but I like to help when I can. 
+        Feel free to use the contact link below to send me a note and I'll get back to you.
+    </p>
+
 {% endblock %}
