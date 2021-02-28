@@ -18,7 +18,6 @@ limitations under the License.
 from flask import request, jsonify
 from . import api
 from app import pcr_model, knn_model, xgb_model
-import numpy as np
 import pandas as pd
 
 
