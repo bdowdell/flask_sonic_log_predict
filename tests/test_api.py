@@ -41,6 +41,10 @@ class APITestCase(unittest.TestCase):
             data=[[8.5781, 0.3521, 55.1824, 0.8121, 0.78099, 6.8291, 2.3256]],
             columns=['CAL', 'CNC', 'GR', 'HRD', 'HRM', 'PE', 'ZDEN']
             )
+        self.df_in_bad_col_names = pd.DataFrame(
+            data=[[0.3521, 55.1824, 0.8121, 2.3256]],
+            columns=['Phi', 'Gamma', 'RD', 'RHOB']
+        )
         self.df_out = pd.DataFrame(
             data=[[102.225407, 196.408402]],
             columns=['pred_DTC', 'pred_DTS']
@@ -67,3 +71,9 @@ class APITestCase(unittest.TestCase):
         df_pred = pd.read_json(response.data, orient='split')
         self.assertAlmostEqual(self.df_out.iloc[0, 0], round(df_pred.iloc[0, 0], 6))
         self.assertAlmostEqual(self.df_out.iloc[0, 1], round(df_pred.iloc[0, 1], 6))
+
+    def test_get_predictions_bad_col_names(self):
+        j_df = json.dumps(self.df_in_bad_col_names.to_json(orient='split'))
+        response = self.client.post('api/get_predictions', data=j_df, headers=self.headers)
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.data.decode('utf-8'), 'Key Error, please check data frame column names')
