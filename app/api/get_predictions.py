@@ -25,10 +25,13 @@ import pandas as pd
 def get_predictions():
     data = request.get_json()
     df_in = pd.read_json(data, orient='split')
-    df_in = df_in[['CNC', 'GR', 'HRD', 'ZDEN']]  # ensure that the columns are in the correct order
-    xgb_pred = xgb_model.predict(df_in)
-    pcr_pred = pcr_model.predict(df_in)
-    knn_pred = knn_model.predict(df_in)
-    y_pred = (xgb_pred + pcr_pred + knn_pred) / 3
-    df_out = pd.DataFrame(data=y_pred, columns=['pred_DTC', 'pred_DTS'])  # return the predictions as a pandas dataframe
-    return df_out.to_json(orient='split')
+    try:
+        df_in = df_in[['CNC', 'GR', 'HRD', 'ZDEN']]  # ensure that the columns are in the correct order
+        xgb_pred = xgb_model.predict(df_in)
+        pcr_pred = pcr_model.predict(df_in)
+        knn_pred = knn_model.predict(df_in)
+        y_pred = (xgb_pred + pcr_pred + knn_pred) / 3
+        df_out = pd.DataFrame(data=y_pred, columns=['pred_DTC', 'pred_DTS'])  # return the predictions as a pandas dataframe
+        return df_out.to_json(orient='split')
+    except KeyError:
+        return 'Key Error, please check data frame column names', 500
