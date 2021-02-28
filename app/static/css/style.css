@@ -3,12 +3,6 @@ ul.no_bullet {
     padding: 0;
     margin: 0;
 }
-li.wiggle {
-    background: url('../img/wavelet_icon.png') no-repeat left;
-    height: 24px;
-    padding-left: 28px;
-    padding-top: 2px;
-}
 h1::before {
     display: block;
     content: " ";
