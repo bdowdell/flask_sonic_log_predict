@@ -7,4 +7,40 @@
 
 {% block content %}
     <h1 class="text-center" id="top">{% block title %} About {% endblock %}</h1>
+    <h4>Background</h4>
+    <p class="text-justify">
+        Welcome to SonicPredict, which is a small Flask web app I built to serve my fitted machine learning
+        model from the 2020 SPWLA PDDA Machine Learning Contest. The competition took place between March-May 2020 
+        with a total of 31 teams participating. The goal of the competition was to predict P- and S-sonic well 
+        logs using other commonly acquired well logs. This is a problem that arises commonly in the oil & gas 
+        industry, either as a result of budget constraints, poor borehole conditions, or sometimes the data 
+        is simply missing.
+    </p>
+    <p class="text-jusity">
+        Each team was given the same training data set from which to build novel machine learning solutions. 
+        Additionally, we were given a 20% sample of the blind test data with which to test our model accuracy. 
+        The ultimate goal was to minimize the combined RMSE of both predicted logs (DTC & DTS). The winner 
+        of the competition was the team whose final submission resulted in the lowest RMSE when tested on 
+        the full blind test data. The data comes from Equinor's 
+        <a href="https://www.equinor.com/en/how-and-why/digitalisation-in-our-dna/volve-field-data-village-download.html" target="_blank">Volve</a> 
+        field which was open-sourced in 2018.
+    </p>
+    <p class="text-justify">
+        The training data consisted of the following well logs:
+        <ul>
+            <li>Caliper (Cal)</li>
+            <li>Gamma Ray (GR)</li>
+            <li>Medium Resistivity (HRM)</li>
+            <li>Deep Resistivity (HRD)</li>
+            <li>Porosity (CNC)</li>
+            <li>Density (ZDEN)</li>
+            <li>Photoelectric Factor (PE)</li>
+            <li>P-Sonic (DTC)</li>
+            <li>S-Sonic (DTS)</li>
+        </ul>
+        and the targets were both P- and S-sonic logs. My final model used GR, HRD, CNC, & ZDEN, and consisted of 
+        and average ensemble of a Random Forest Regression, Gradient Boosting Regressor, XGBoost, Principal Component Regression, 
+        & KNN Regression. This model achieved an RMSE of 16.31 and finished 9<sup>th</sup> of the 20 teams which were ranked. 
+        The top team achieved an RMSE of 12.36.
+    </p>
 {% endblock %}

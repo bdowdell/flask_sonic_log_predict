@@ -1,7 +1,124 @@
 {% extends 'base.html' %}
 {% block head %}
     {{ super() }}
+    <!-- custom CSS -->
+    <link rel="stylesheet" href="../static/css/style.css" />
 {% endblock %}
 {% block content %}
     <h1 class="text-center">{% block title %} Machine Learning Sonic Log Predictor {% endblock %}</h1>
+    <h4>Accessing the API to make predictions</h4>
+    <p class="text-jusity">
+        I have built an API using Flask to serve my trained model. The Random Forest Regression & Gradient Boosting Regression 
+        models are both very heavy (even with compression=3 in the joblib dump), so in this implementation, the resulting predictions will be an average of the XGBoost, 
+        Principal Component Regression, and KNN Regression models only. This lightened model has an RMSE 0.2 points higher than my 
+        full submitted model (16.51 versus 16.31).
+    </p>
+    <p class="text-justify">
+        In order to make predictions, you need a Pandas DataFrame 
+        which contains Gamma Ray (GR), Deep Resistivity (HRD), Porosity (CNC), and Density (ZDEN). The column order should be: 
+        <strong>CNC, GR, HRD, & ZDEN</strong>, however; the API function call will re-order them anyway. What is more important is that 
+        the columns in the submitted data frame have those column labels.
+    </p>
+    <p class="text-jusityf">
+        For simplicity, you can download the 
+        <a href="https://github.com/bdowdell/Machine-Learning-Competition-2020/blob/master/data/test.csv" target="_blank">full blind test data</a> 
+        which was the data used for making final predictions for scoring. Right-click on the "Raw" button and select "Save Link As" to download the file.
+    </p>
+    <h5>1) Import the necessary libraries</h5>
+    <pre><code>
+        import pandas as pd
+        import requests
+        import json
+        import numpy as np
+    </code></pre>
+    <br />
+    <h5>2) Prepare the data</h5>
+    <pre><code>
+        df = pd.read_csv('test.csv')
+        df.head()
+    </code></pre>
+    <div class="clearfix">
+        <img src="../static/img/df_head.png" class="img-fluid rounded float-left " alt="dataframe" loading="lazy">
+    </div>
+    <p class="text-justify">
+        Here, you should see the column names present in the data frame. If these do not match the ones specified above, you can 
+        rename them by:
+    </p>
+    <pre><code>
+        df.rename(columns={
+            'Gamma': 'GR',
+            'ResD': 'HRD',
+            'Porosity': 'CNC',
+            'Rhob': 'ZDEN',
+        }, inplace=True)
+    </code></pre>
+    <p class="text-justify">
+        Replace the keys in the column mapper dictionary with whatever is present in your data, if you are not using the test data.
+    </p>
+    <p class="text-justify">
+        Drop the labels which are not needed by the model:
+        <pre><code>
+            df.drop(labels=['CAL', 'HRM', 'PE'], axis=1, inplace=True)
+        </code></pre>
+    </p>
+    <br />
+    <h5>3) Prepare the json request</h5>
+    <p>First, specify the url for the api:</p>
+    <pre><code>
+        url = 'https://127.0.0.1:5000/api/get_predictions'
+    </code></pre>
+    <p>Convert the dataframe data to json format and specify the json headers:</p>
+    <pre><code>
+        j_df = json.dumps(df.to_jason(orient='split'))
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+    </code></pre>
+    <br />
+    <h5>4) Make the request!</h5>
+    <pre><code>
+        r = requests.post(url, data=j_df, headers=headers)
+        print(f'Request response: {r}')
+    </code></pre>
+    <p class="text-justify">
+        If all went well, the response back should be: <code style="color: black; font-family: monospace;">&lt;Response [200]&gt;</code>.
+    </p>
+    <h5>5) Convert the json response string back to a Pandas Dataframe</h5>
+    <pre><code>
+        df_pred = pd.read_json(r.text, orient='split')
+        df_pred.head()
+    </code></pre>
+    <div class="clearfix">
+        <img src="../static/img/df_pred.png" class="img-fluid rounded float-left" alt="df_pred" loading="lazy">
+    </div>
+    <br />
+    <h5>6) Merge the predicted curves with the input curves</h5>
+    <pre><code>
+        df_final = pd.merge(df, df_pred, left_index=True, right_index=True)
+        df_final
+    </code></pre>
+    <div class="clearfix">
+        <img src="../static/img/df_final.png" class="img-fluid rounded float-left" alt="df_final" loading="lazy">
+    </div>
+    <br />
+    <h5>7) Comparing the predictions to the real data</h5>
+    <p class="text-justify">
+        Once the competition was closed, the 
+        <a href="https://github.com/pddasig/Machine-Learning-Competition-2020/blob/master/real_test_result.csv" target="_blank">
+            real blind DTC & DTS data</a> was released. Download by right-clicking on the "Raw" button and selecting "Save Link As".
+    </p>
+    <pre><code>
+        y_real = pd.read_csv('real_test_result.csv')
+        y_real.head()
+    </code></pre>
+    <div class="clearfix">
+        <img src="../static/img/y_real_head.png" class="img-fluid rounded float-left" alt="y_real" loading="lazy">
+    </div>
+    <br />
+    <p class="text-justify">
+        Use Scikit-learn's <code style="color: black; font-family:monospace;">mean_squared_error</code> metric to evaluate the predictions RMSE:
+    </p>
+    <pre><code>
+        from sklearn.metrics import mean_squared_error
+        mean_squared_error(y_real, df_final[['pred_DTC', 'pred_DTS']], squared=False)
+    </code></pre>
+    <code style="color: black; font-family:monospace;">16.510940896741243</code>
 {% endblock %}
