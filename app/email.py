@@ -29,7 +29,7 @@ def send_async_email(app, msg):
 
 def send_email(subject, sender_email, sender_name, recipients, text_body, template=None):
     msg = Message(
-        subject,
+        'SonicPredict: '+subject,
         sender=sender_email,
         recipients=[recipients],
         extra_headers={'name': sender_name}
